@@ -1,6 +1,8 @@
 import logging.config
 from logging import INFO, getLogger
 
+from vrc_world_crawler.crawler.crawler import Crawler
+
 logging.config.fileConfig("./log/logging.ini", disable_existing_loggers=False)
 # for name in logging.root.manager.loggerDict:
 #     if "vrc_world_crawler" not in name:
@@ -12,8 +14,10 @@ logger.setLevel(INFO)
 def main() -> None:
     horizontal_line = "-" * 80
     logger.info(horizontal_line)
-    logger.info("vrc world crawler -> start")
-    logger.info("vrc world crawler -> done")
+    logger.info("VRC world crawler -> start")
+    crawler = Crawler()
+    crawler.run()
+    logger.info("VRC world crawler -> done")
     logger.info(horizontal_line)
 
 
