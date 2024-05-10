@@ -1,3 +1,4 @@
+import functools
 import pprint
 import re
 from dataclasses import dataclass
@@ -7,49 +8,62 @@ from typing import Self
 
 import orjson
 
-from blueskycrawler.db.model import Like, Media, User
-from blueskycrawler.util import find_values, to_jst
+from vrc_world_crawler.db.model import FavoriteWorld
+from vrc_world_crawler.util import find_values, to_jst
 
 
 @dataclass(frozen=True)
 class FetchedInfo:
-    like: Like
-    user: User
-    media_list: list[Media]
+    world_id: str
+    world_name: str
+    world_url: str
+    description: str
+    author_id: str
+    author_name: str
+    favorite_id: str
+    favorite_group: str
+    release_status: str
+    featured: int
+    image_url: str
+    thmbnail_image_url: str
+    version: int
+    star: int
+    visit: int
+    published_at: str
+    lab_published_at: str
+    created_at: str
+    updated_at: str
+    registered_at: str
 
     def __post_init__(self) -> None:
         """引数チェック
-
-        media_list は空リストは許容しない
-
         Raises:
-            ValueError: like が Like インスタンスでない
-            ValueError: user が User インスタンスでない
-            ValueError: media_list がリストでない
-            ValueError: media_list が空リスト
-            ValueError: media_list 内に Media インスタンス以外の要素が含まれる
         """
-        if not isinstance(self.like, Like):
-            raise ValueError("Argument like is not Like type.")
-        if not isinstance(self.user, User):
-            raise ValueError("Argument user is not User type.")
-        if not isinstance(self.media_list, list):
-            raise ValueError("Argument media_list is not list.")
-        if len(self.media_list) == 0:
-            raise ValueError("Argument media_list is empty.")
-        if not all([isinstance(media, Media) for media in self.media_list]):
-            raise ValueError("Argument media_list is include not Media type element.")
+        pass
 
-    def get_records(self) -> list[tuple[Like, User, Media]]:
-        """レコードをタプルのリストにして返す
-
-        media_list はそれぞれの media ごとに要素となるが、
-        like と user は共通に付与される
-
-        Returns:
-            list[tuple[Like, User, Media]]: インスタンスのレコード
-        """
-        return [(self.like, self.user, media) for media in self.media_list]
+    def to_dict(self) -> dict:
+        return {
+            "world_id": self.world_id,
+            "world_name": self.world_name,
+            "world_url": self.world_url,
+            "description": self.description,
+            "author_id": self.author_id,
+            "author_name": self.author_name,
+            "favorite_id": self.favorite_id,
+            "favorite_group": self.favorite_group,
+            "release_status": self.release_status,
+            "featured": self.featured,
+            "image_url": self.image_url,
+            "thmbnail_image_url": self.thmbnail_image_url,
+            "version": self.version,
+            "star": self.star,
+            "visit": self.visit,
+            "published_at": self.published_at,
+            "lab_published_at": self.lab_published_at,
+            "created_at": self.created_at,
+            "updated_at": self.updated_at,
+            "registered_at": self.registered_at,
+        }
 
     @classmethod
     def create(cls, fetched_dict: dict) -> Self:
@@ -79,94 +93,60 @@ class FetchedInfo:
                 result = result[:-6]
             return result
 
-        # 採用する登録日時を取得
-        registered_at = datetime.now().isoformat()
+        find = functools.partial(find_values, obj=fetched_dict, is_predict_one=True, key_white_list=[""])
+
         # fetch データの辞書解析
-        post_dict = find_values(fetched_dict, "post", True, [""])
-        author_dict = find_values(post_dict, "author", True, [""])
-        record_dict = find_values(post_dict, "record", True, [""])
+        world_id = find(key="id")
+        world_name = find(key="name")
+        world_url = f"https://vrchat.com/home/world/{world_id}"
+        description = find(key="description")
+        author_id = find(key="authorId")
+        author_name = find(key="authorName")
+        favorite_id = find(key="favoriteId")
+        favorite_group = find(key="favoriteGroup")
+        release_status = find(key="releaseStatus")
+        featured = 1 if bool(find(key="featured")) else 0
+        image_url = find(key="imageUrl")
+        thmbnail_image_url = find(key="thumbnailImageUrl")
+        version = int(find(key="version"))
+        star = int(find(key="favorites"))
+        visit = int(find(key="visits"))
+        published_at_str = find(key="publicationDate")
+        published_at = "" if published_at_str == "none" else normalize_date_at(published_at_str)
+        lab_published_at_str = find(key="labsPublicationDate")
+        lab_published_at = "" if lab_published_at_str == "none" else normalize_date_at(lab_published_at_str)
+        created_at = normalize_date_at(find(key="created_at"))
+        updated_at = normalize_date_at(find(key="updated_at"))
+        registered_at = datetime.now().isoformat()
 
-        # メディアが含まれる部分を抽出する
-        embed_dict, record_embed_dict = {}, {}
-        media_list_1, media_list_2 = [], []
-        try:
-            # post 直下の embed (直リンクとaltテキストが含まれる)と
-            # record 配下の embed (mime_type と size が含まれる)がそれぞれ存在するか確認する
-            embed_dict = find_values(post_dict, "embed", True, [""])
-            record_embed_dict = find_values(record_dict, "embed", True, [""])
-            media_list_1 = find_values(embed_dict, "images", True, [""])
-            media_list_2 = find_values(record_embed_dict, "images", True, [""])
-        except ValueError:
-            # メディアが含まれていなかった → エラー
-            raise ValueError("Like entry has no media.")
-
-        # post 情報から post_id と created_at を抽出する
-        uri: str = find_values(post_dict, "uri", True, [""])
-        post_id = uri.split(r"/")[-1]
-        post_created_at = normalize_date_at(find_values(record_dict, "created_at", True, [""]))
-
-        # author 情報から username を抽出する
-        user_username = find_values(author_dict, "handle", True, [""])
-
-        # media_list 作成
-        media_list = []
-        for media_dict_1, media_dict_2 in zip(media_list_1, media_list_2):
-            media_url: str = find_values(media_dict_1, "fullsize", True, [""])
-            media_alt_text = find_values(media_dict_1, "alt", True, [""])
-            media_id = re.findall(r"^.*/(.+)@.*?$", media_url)[0]
-            media_mime_type = find_values(media_dict_2, "mime_type", True)
-            media_size = find_values(media_dict_2, "size", True)
-            media_created_at = post_created_at
-            media = Media.create({
-                "post_id": post_id,
-                "media_id": media_id,
-                "username": user_username,
-                "alt_text": media_alt_text,
-                "mime_type": media_mime_type,
-                "size": media_size,
-                "url": media_url,
-                "created_at": media_created_at,
-                "registered_at": registered_at,
-            })
-            media_list.append(media)
-
-        # like 作成
-        user_id = find_values(author_dict, "did", True, [""])
-        post_url = f"https://bsky.app/profile/{user_username}/post/{post_id}"
-        post_text = find_values(record_dict, "text", True, [""])
-        like = Like.create({
-            "post_id": post_id,
-            "user_id": user_id,
-            "url": post_url,
-            "text": post_text,
-            "created_at": post_created_at,
-            "registered_at": registered_at,
-        })
-
-        # user 作成
-        user_name = find_values(author_dict, "display_name", True, [""]) or user_username
-        user_avatar_url = find_values(author_dict, "avatar", True, [""])
-        user = User.create({
-            "user_id": user_id,
-            "name": user_name,
-            "username": user_username,
-            "avatar_url": user_avatar_url,
-            "registered_at": registered_at,
-        })
-
-        # FetchedInfo インスタンス作成
-        return FetchedInfo(like, user, media_list)
+        return FetchedInfo(
+            world_id,
+            world_name,
+            world_url,
+            description,
+            author_id,
+            author_name,
+            favorite_id,
+            favorite_group,
+            release_status,
+            featured,
+            image_url,
+            thmbnail_image_url,
+            version,
+            star,
+            visit,
+            published_at,
+            lab_published_at,
+            created_at,
+            updated_at,
+            registered_at,
+        )
 
 
 if __name__ == "__main__":
-    cache_path = Path("./blueskycrawler/cache/")
-    load_paths: list[Path] = [p for p in cache_path.glob("*bluesky.json*")]
-    if len(load_paths) == 0:
-        pprint.pprint("Cache file is not exist.")
-        exit(-1)
-    load_path: Path = load_paths[-1]
-    fetched_entry_list: list[dict] = orjson.loads(load_path.read_bytes()).get("result")
-    fetched_entry_list = fetched_entry_list["feed"]
-    for entry in fetched_entry_list[:3]:
+    cache_path = Path("./cache/")
+    last_cache_file: Path = max(cache_path.glob("*"), key=lambda path: path.stat().st_mtime)
+    fetched_dict_list = orjson.loads(last_cache_file.read_bytes())
+    for entry in fetched_dict_list[:3]:
         fetched_info = FetchedInfo.create(entry)
         pprint.pprint(fetched_info)

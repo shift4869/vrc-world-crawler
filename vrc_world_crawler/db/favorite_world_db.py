@@ -7,7 +7,7 @@ from vrc_world_crawler.db.model import FavoriteWorld
 
 
 class FavoriteWorldDB(Base):
-    def __init__(self, db_path: str = "bksy_db.db"):
+    def __init__(self, db_path: str = "vrc.db"):
         super().__init__(db_path)
 
     def select(self):
@@ -17,11 +17,11 @@ class FavoriteWorldDB(Base):
         session.close()
         return result
 
-    def upsert(self, record: FavoriteWorld | list[FavoriteWorld] | list[dict]) -> list[int]:
+    def upsert(self, record: FavoriteWorld | list[FavoriteWorld]) -> list[int]:
         """upsert
 
         Args:
-            record (FavoriteWorld | list[FavoriteWorld] | list[dict]): 投入レコード、またはレコード辞書のリスト
+            record (FavoriteWorld | list[FavoriteWorld]): 投入レコード、またはレコード辞書のリスト
 
         Returns:
             list[int]: レコードに対応した投入結果のリスト
@@ -34,8 +34,6 @@ class FavoriteWorldDB(Base):
                 record_list = [record]
             case [FavoriteWorld(), *rest] if all([isinstance(r, FavoriteWorld) for r in rest]):
                 record_list = record
-            case [dict(), *rest] if all([isinstance(r, dict) for r in rest]):
-                record_list = [FavoriteWorld.create(r) for r in record]
             case _:
                 raise TypeError("record is invalid type.")
 
@@ -44,7 +42,7 @@ class FavoriteWorldDB(Base):
 
         for r in record_list:
             try:
-                q = session.query(FavoriteWorld).filter(and_(FavoriteWorld.post_id == r.post_id)).with_for_update()
+                q = session.query(FavoriteWorld).filter(and_(FavoriteWorld.world_id == r.world_id)).with_for_update()
                 p = q.one()
             except NoResultFound:
                 # INSERT
@@ -52,11 +50,25 @@ class FavoriteWorldDB(Base):
                 result.append(0)
             else:
                 # UPDATE
-                p.post_id = r.post_id
-                p.user_id = r.user_id
-                p.url = r.url
-                p.text = r.text
+                p.world_id = r.world_id
+                p.world_name = r.world_name
+                p.world_url = r.world_url
+                p.description = r.description
+                p.author_id = r.author_id
+                p.author_name = r.author_name
+                p.favorite_id = r.favorite_id
+                p.favorite_group = r.favorite_group
+                p.release_status = r.release_status
+                p.featured = r.featured
+                p.image_url = r.image_url
+                p.thmbnail_image_url = r.thmbnail_image_url
+                p.version = r.version
+                p.star = r.star
+                p.visit = r.visit
+                p.published_at = r.published_at
+                p.lab_published_at = r.lab_published_at
                 p.created_at = r.created_at
+                p.updated_at = r.updated_at
                 p.registered_at = r.registered_at
                 result.append(1)
 

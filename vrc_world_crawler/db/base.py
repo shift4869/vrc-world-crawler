@@ -7,7 +7,7 @@ from vrc_world_crawler.db.model import Base as ModelBase
 
 
 class Base(metaclass=ABCMeta):
-    def __init__(self, db_path: str = "bksy_db.db") -> None:
+    def __init__(self, db_path: str = "vrc.db") -> None:
         self.db_path = db_path
         self.db_url = f"sqlite:///{self.db_path}"
 

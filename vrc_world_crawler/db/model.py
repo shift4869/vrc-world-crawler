@@ -1,5 +1,3 @@
-import re
-from pathlib import Path
 from typing import Self
 
 from sqlalchemy import Column, Integer, String, create_engine
@@ -10,63 +8,154 @@ Base = declarative_base()
 
 class FavoriteWorld(Base):
     """FavoriteWorldモデル
-    [id] INTEGER NOT NULL UNIQUE,
-    [post_id] TEXT NOT NULL UNIQUE,
-    [user_id] TEXT NOT NULL,
-    [url] TEXT NOT NULL,
-    [text] TEXT,
-    [created_at] TEXT NOT NULL,
-    [registered_at] TEXT NOT NULL,
-    PRIMARY KEY([id])
     """
 
     __tablename__ = "FavoriteWorld"
 
     id = Column(Integer, primary_key=True)
-    post_id = Column(String(256), nullable=False, unique=True)
-    user_id = Column(String(256), nullable=False)
-    url = Column(String(256), nullable=False)
-    text = Column(String(512))
+    world_id = Column(String(256), nullable=False, unique=True)
+    world_name = Column(String(256), nullable=False)
+    world_url = Column(String(512), nullable=False)
+    description = Column(String(512))
+    author_id = Column(String(256), nullable=False)
+    author_name = Column(String(256), nullable=False)
+    favorite_id = Column(String(256), nullable=False)
+    favorite_group = Column(String(256), nullable=False)
+    release_status = Column(String(256), nullable=False)
+    featured = Column(Integer, nullable=False)
+    image_url = Column(String(512))
+    thmbnail_image_url = Column(String(512))
+    version = Column(Integer, nullable=False)
+    star = Column(Integer, nullable=False)
+    visit = Column(Integer, nullable=False)
+    published_at = Column(String(256))
+    lab_published_at = Column(String(256))
     created_at = Column(String(256), nullable=False)
+    updated_at = Column(String(256), nullable=False)
     registered_at = Column(String(256), nullable=False)
 
-    def __init__(self, post_id: str, user_id: str, url: str, text: str, created_at: str, registered_at: str):
+    def __init__(
+        self,
+        world_id: str,
+        world_name: str,
+        world_url: str,
+        description: str,
+        author_id: str,
+        author_name: str,
+        favorite_id: str,
+        favorite_group: str,
+        release_status: str,
+        featured: str,
+        image_url: str,
+        thmbnail_image_url: str,
+        version: int,
+        star: int,
+        visit: int,
+        published_at: str,
+        lab_published_at: str,
+        created_at: str,
+        updated_at: str,
+        registered_at: str,
+    ):
         # self.id = id
-        self.post_id = post_id
-        self.user_id = user_id
-        self.url = url
-        self.text = text
+        self.world_id = world_id
+        self.world_name = world_name
+        self.world_url = world_url
+        self.description = description
+        self.author_id = author_id
+        self.author_name = author_name
+        self.favorite_id = favorite_id
+        self.favorite_group = favorite_group
+        self.release_status = release_status
+        self.featured = featured
+        self.image_url = image_url
+        self.thmbnail_image_url = thmbnail_image_url
+        self.version = version
+        self.star = star
+        self.visit = visit
+        self.published_at = published_at
+        self.lab_published_at = lab_published_at
         self.created_at = created_at
+        self.updated_at = updated_at
         self.registered_at = registered_at
 
     @classmethod
     def create(self, args_dict: dict) -> Self:
         match args_dict:
             case {
-                "post_id": post_id,
-                "user_id": user_id,
-                "url": url,
-                "text": text,
+                "world_id": world_id,
+                "world_name": world_name,
+                "world_url": world_url,
+                "description": description,
+                "author_id": author_id,
+                "author_name": author_name,
+                "favorite_id": favorite_id,
+                "favorite_group": favorite_group,
+                "release_status": release_status,
+                "featured": featured,
+                "image_url": image_url,
+                "thmbnail_image_url": thmbnail_image_url,
+                "version": version,
+                "star": star,
+                "visit": visit,
+                "published_at": published_at,
+                "lab_published_at": lab_published_at,
                 "created_at": created_at,
+                "updated_at": updated_at,
                 "registered_at": registered_at,
             }:
-                return Like(post_id, user_id, url, text, created_at, registered_at)
+                return FavoriteWorld(
+                    world_id,
+                    world_name,
+                    world_url,
+                    description,
+                    author_id,
+                    author_name,
+                    favorite_id,
+                    favorite_group,
+                    release_status,
+                    featured,
+                    image_url,
+                    thmbnail_image_url,
+                    version,
+                    star,
+                    visit,
+                    published_at,
+                    lab_published_at,
+                    created_at,
+                    updated_at,
+                    registered_at,
+                )
             case _:
                 raise ValueError("Unmatch args_dict.")
 
     def __repr__(self):
-        return f"<Like(post_id='{self.post_id}')>"
+        return f"<FavoriteWorld(world_id='{self.world_id}')>"
 
     def __eq__(self, other):
-        return isinstance(other, Like) and other.post_id == self.post_id
+        return isinstance(other, FavoriteWorld) and other.world_id == self.world_id
 
     def to_dict(self) -> dict:
         return {
-            "post_id": self.post_id,
-            "user_id": self.user_id,
-            "url": self.url,
-            "text": self.text,
+            "world_id": self.world_id,
+            "world_name": self.world_name,
+            "world_url": self.world_url,
+            "description": self.description,
+            "author_id": self.author_id,
+            "author_name": self.author_name,
+            "favorite_id": self.favorite_id,
+            "favorite_group": self.favorite_group,
+            "release_status": self.release_status,
+            "featured": self.featured,
+            "image_url": self.image_url,
+            "thmbnail_image_url": self.thmbnail_image_url,
+            "version": self.version,
+            "star": self.star,
+            "visit": self.visit,
+            "published_at": self.published_at,
+            "lab_published_at": self.lab_published_at,
             "created_at": self.created_at,
+            "updated_at": self.updated_at,
             "registered_at": self.registered_at,
         }
 
