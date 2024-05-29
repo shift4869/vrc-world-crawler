@@ -69,7 +69,7 @@ class FavoriteWorldDB(Base):
                 p.lab_published_at = r.lab_published_at
                 p.created_at = r.created_at
                 p.updated_at = r.updated_at
-                p.registered_at = r.registered_at
+                # p.registered_at = r.registered_at
                 result.append(1)
 
         session.commit()
