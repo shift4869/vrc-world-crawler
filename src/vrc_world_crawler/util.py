@@ -40,8 +40,8 @@ def find_values(
     return result[0]
 
 
-def to_jst(gmt: datetime) -> datetime:
-    if not isinstance(gmt, datetime):
+def to_jst(utc: datetime) -> datetime:
+    if not isinstance(utc, datetime):
         raise ValueError("args is not datetime.")
-    jst = gmt + timedelta(hours=9)
+    jst = utc + timedelta(hours=9)
     return jst

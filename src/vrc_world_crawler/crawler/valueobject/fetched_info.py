@@ -1,5 +1,4 @@
 import functools
-import pprint
 import re
 from dataclasses import dataclass
 from datetime import datetime
@@ -37,9 +36,65 @@ class FetchedInfo:
 
     def __post_init__(self) -> None:
         """引数チェック
-        Raises:
+        Raises: ValueError
         """
-        pass
+        if not isinstance(self.world_id, str):
+            raise ValueError("world_id must be str.")
+        if not isinstance(self.world_name, str):
+            raise ValueError("world_name must br str")
+        if not isinstance(self.world_url, str):
+            raise ValueError("world_url must br str")
+        if not isinstance(self.description, str):
+            raise ValueError("description must br str")
+        if not isinstance(self.author_id, str):
+            raise ValueError("author_id must br str")
+        if not isinstance(self.author_name, str):
+            raise ValueError("author_name must br str")
+        if not isinstance(self.favorite_id, str):
+            raise ValueError("favorite_id must br str")
+        if not isinstance(self.favorite_group, str):
+            raise ValueError("favorite_group must br str")
+        if not isinstance(self.release_status, str):
+            raise ValueError("release_status must br str")
+        if not isinstance(self.featured, int):
+            raise ValueError("featured must br int")
+        if not isinstance(self.image_url, str):
+            raise ValueError("image_url must br str")
+        if not isinstance(self.thmbnail_image_url, str):
+            raise ValueError("thmbnail_image_url must br str")
+        if not isinstance(self.version, int):
+            raise ValueError("version must br int")
+        if not isinstance(self.star, int):
+            raise ValueError("star must br int")
+        if not isinstance(self.visit, int):
+            raise ValueError("visit must br int")
+        if not isinstance(self.published_at, str):
+            raise ValueError("published_at must br str")
+        if not isinstance(self.lab_published_at, str):
+            raise ValueError("lab_published_at must br str")
+        if not isinstance(self.created_at, str):
+            raise ValueError("created_at must br str")
+        if not isinstance(self.updated_at, str):
+            raise ValueError("updated_at must br str")
+        if not isinstance(self.registered_at, str):
+            raise ValueError("registered_at must br str")
+
+        # world_id フォーマットチェック
+        if not re.search("wrld_.*", self.world_id):
+            raise ValueError("world_id must be 'wrld_.*'.")
+
+        # 日付系フォーマットチェック
+        # 空、もしくはISOフォーマットの文字列のみ受け付ける
+        if self.published_at:
+            datetime.fromisoformat(self.published_at)
+        if self.lab_published_at:
+            datetime.fromisoformat(self.lab_published_at)
+        if self.created_at:
+            datetime.fromisoformat(self.created_at)
+        if self.updated_at:
+            datetime.fromisoformat(self.updated_at)
+        if self.registered_at:
+            datetime.fromisoformat(self.registered_at)
 
     def to_dict(self) -> dict:
         return {
@@ -67,7 +122,7 @@ class FetchedInfo:
 
     @classmethod
     def create(cls, fetched_dict: dict) -> Self:
-        """fetched_info インスタンスを作成する
+        """FetchedInfo インスタンスを作成する
 
         fetch データの辞書解析を行う
         fetch データの辞書構造が変わった・取得情報の参照元が変わった場合はこのメソッドを更新する
@@ -76,7 +131,7 @@ class FetchedInfo:
             fetched_dict (dict): fetch したデータ辞書の1レコード
 
         Returns:
-            Self: fetched_info インスタンス
+            Self: FetchedInfo インスタンス
         """
 
         def normalize_date_at(date_at_str: str) -> str:
@@ -144,6 +199,8 @@ class FetchedInfo:
 
 
 if __name__ == "__main__":
+    import pprint
+
     cache_path = Path("./cache/")
     last_cache_file: Path = max(cache_path.glob("*"), key=lambda path: path.stat().st_mtime)
     fetched_dict_list = orjson.loads(last_cache_file.read_bytes())
