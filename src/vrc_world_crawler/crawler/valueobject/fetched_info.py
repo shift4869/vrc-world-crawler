@@ -80,8 +80,12 @@ class FetchedInfo:
             raise ValueError("registered_at must br str")
 
         # world_id フォーマットチェック
-        if not re.search("wrld_.*", self.world_id):
-            raise ValueError("world_id must be 'wrld_.*'.")
+        if self.release_status == "public":
+            if not re.search("wrld_.*", self.world_id):
+                raise ValueError("world_id must be 'wrld_.*'.")
+        else:
+            if self.world_id != "???":
+                raise ValueError("Not available world_id must be '???'.")
 
         # 日付系フォーマットチェック
         # 空、もしくはISOフォーマットの文字列のみ受け付ける
@@ -148,9 +152,45 @@ class FetchedInfo:
                 result = result[:-6]
             return result
 
+        registered_at = datetime.now().isoformat()
         find = functools.partial(find_values, obj=fetched_dict, is_predict_one=True, key_white_list=[""])
 
         # fetch データの辞書解析
+        release_status = find(key="releaseStatus")
+        if release_status != "public":
+            # release_status が "public" でない場合
+            # 現在公開されていないワールドの可能性が高い
+            # 取得できる情報のみ取得する
+            # ただし world_id, world_name, author_name は "???" となっているため実質的に情報を持たない
+            # favorite_id は有効なのでこれで紐づける
+            world_id = find(key="id")
+            world_name = find(key="name")
+            author_name = find(key="authorName")
+            favorite_id = find(key="favoriteId")
+            favorite_group = find(key="favoriteGroup")
+            return FetchedInfo(
+                world_id,
+                world_name,
+                "",
+                "",
+                "",
+                author_name,
+                favorite_id,
+                favorite_group,
+                release_status,
+                -1,
+                "",
+                "",
+                -1,
+                -1,
+                -1,
+                "",
+                "",
+                "",
+                "",
+                registered_at,
+            )
+
         world_id = find(key="id")
         world_name = find(key="name")
         world_url = f"https://vrchat.com/home/world/{world_id}"
@@ -159,7 +199,6 @@ class FetchedInfo:
         author_name = find(key="authorName")
         favorite_id = find(key="favoriteId")
         favorite_group = find(key="favoriteGroup")
-        release_status = find(key="releaseStatus")
         featured = 1 if bool(find(key="featured")) else 0
         image_url = find(key="imageUrl")
         thmbnail_image_url = find(key="thumbnailImageUrl")
@@ -172,7 +211,6 @@ class FetchedInfo:
         lab_published_at = "" if lab_published_at_str == "none" else normalize_date_at(lab_published_at_str)
         created_at = normalize_date_at(find(key="created_at"))
         updated_at = normalize_date_at(find(key="updated_at"))
-        registered_at = datetime.now().isoformat()
 
         return FetchedInfo(
             world_id,
