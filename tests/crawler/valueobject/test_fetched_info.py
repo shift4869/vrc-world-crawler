@@ -26,7 +26,7 @@ class TestFetchedInfo(unittest.TestCase):
             "author_name",
             "favorite_id",
             "favorite_group",
-            "release_status",
+            "public",
             0,
             "image_url",
             "thmbnail_image_url",
