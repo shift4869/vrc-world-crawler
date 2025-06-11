@@ -31,7 +31,7 @@ class Crawler:
             return
 
         logger.info("DB control -> start.")
-        self.db.flag_clear()
+        self.db.clear_favorited()
         record_list = [FavoriteWorld.create(fetched_info.to_dict()) for fetched_info in fetched_info_list]
         self.db.upsert(record_list)
         logger.info("DB control -> done.")

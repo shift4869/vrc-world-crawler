@@ -57,7 +57,7 @@ class FavoriteWorld(Base):
         created_at: str,
         updated_at: str,
         registered_at: str,
-    ):
+    ) -> None:
         # self.id = id
         self.world_id = world_id
         self.world_name = world_name
@@ -133,10 +133,10 @@ class FavoriteWorld(Base):
             case _:
                 raise ValueError("Unmatch args_dict.")
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<FavoriteWorld(world_id='{self.world_id}')>"
 
-    def __eq__(self, other):
+    def __eq__(self, other: Self) -> bool:
         return isinstance(other, FavoriteWorld) and other.world_id == self.world_id
 
     def to_dict(self) -> dict:

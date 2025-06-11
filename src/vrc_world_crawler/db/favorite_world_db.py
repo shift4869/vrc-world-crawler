@@ -22,7 +22,7 @@ class FavoriteWorldDB(Base):
         session.close()
         return result
 
-    def flag_clear(self) -> int:
+    def clear_favorited(self) -> int:
         """flag_clear
 
         全レコードの is_favorited フラグをすべて False にする
