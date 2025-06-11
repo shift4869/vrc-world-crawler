@@ -1,14 +1,13 @@
 from typing import Self
 
-from sqlalchemy import Column, Integer, String, create_engine
+from sqlalchemy import Boolean, Column, Integer, String, create_engine
 from sqlalchemy.orm import Session, declarative_base
 
 Base = declarative_base()
 
 
 class FavoriteWorld(Base):
-    """FavoriteWorldモデル
-    """
+    """FavoriteWorldモデル"""
 
     __tablename__ = "FavoriteWorld"
 
@@ -21,6 +20,7 @@ class FavoriteWorld(Base):
     author_name = Column(String(256), nullable=False)
     favorite_id = Column(String(256), nullable=False)
     favorite_group = Column(String(256), nullable=False)
+    is_favorited = Column(Boolean, nullable=False)
     release_status = Column(String(256), nullable=False)
     featured = Column(Integer, nullable=False)
     image_url = Column(String(512))
@@ -44,6 +44,7 @@ class FavoriteWorld(Base):
         author_name: str,
         favorite_id: str,
         favorite_group: str,
+        is_favorited: bool,
         release_status: str,
         featured: str,
         image_url: str,
@@ -66,6 +67,7 @@ class FavoriteWorld(Base):
         self.author_name = author_name
         self.favorite_id = favorite_id
         self.favorite_group = favorite_group
+        self.is_favorited = is_favorited
         self.release_status = release_status
         self.featured = featured
         self.image_url = image_url
@@ -91,6 +93,7 @@ class FavoriteWorld(Base):
                 "author_name": author_name,
                 "favorite_id": favorite_id,
                 "favorite_group": favorite_group,
+                "is_favorited": is_favorited,
                 "release_status": release_status,
                 "featured": featured,
                 "image_url": image_url,
@@ -113,6 +116,7 @@ class FavoriteWorld(Base):
                     author_name,
                     favorite_id,
                     favorite_group,
+                    is_favorited,
                     release_status,
                     featured,
                     image_url,
@@ -145,6 +149,7 @@ class FavoriteWorld(Base):
             "author_name": self.author_name,
             "favorite_id": self.favorite_id,
             "favorite_group": self.favorite_group,
+            "is_favorited": self.is_favorited,
             "release_status": self.release_status,
             "featured": self.featured,
             "image_url": self.image_url,

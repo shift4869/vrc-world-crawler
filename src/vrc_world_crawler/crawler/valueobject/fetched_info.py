@@ -21,6 +21,7 @@ class FetchedInfo:
     author_name: str
     favorite_id: str
     favorite_group: str
+    is_favorited: bool
     release_status: str
     featured: int
     image_url: str
@@ -54,6 +55,8 @@ class FetchedInfo:
             raise ValueError("favorite_id must br str")
         if not isinstance(self.favorite_group, str):
             raise ValueError("favorite_group must br str")
+        if not isinstance(self.is_favorited, bool):
+            raise ValueError("is_favorited must br bool")
         if not isinstance(self.release_status, str):
             raise ValueError("release_status must br str")
         if not isinstance(self.featured, int):
@@ -110,6 +113,7 @@ class FetchedInfo:
             "author_name": self.author_name,
             "favorite_id": self.favorite_id,
             "favorite_group": self.favorite_group,
+            "is_favorited": self.is_favorited,
             "release_status": self.release_status,
             "featured": self.featured,
             "image_url": self.image_url,
@@ -168,6 +172,7 @@ class FetchedInfo:
             author_name = find(key="authorName")
             favorite_id = find(key="favoriteId")
             favorite_group = find(key="favoriteGroup")
+            is_favorited = True
             return FetchedInfo(
                 world_id,
                 world_name,
@@ -178,6 +183,7 @@ class FetchedInfo:
                 favorite_id,
                 favorite_group,
                 release_status,
+                is_favorited,
                 -1,
                 "",
                 "",
@@ -199,6 +205,7 @@ class FetchedInfo:
         author_name = find(key="authorName")
         favorite_id = find(key="favoriteId")
         favorite_group = find(key="favoriteGroup")
+        is_favorited = True
         featured = 1 if bool(find(key="featured")) else 0
         image_url = find(key="imageUrl")
         thmbnail_image_url = find(key="thumbnailImageUrl")
@@ -221,6 +228,7 @@ class FetchedInfo:
             author_name,
             favorite_id,
             favorite_group,
+            is_favorited,
             release_status,
             featured,
             image_url,

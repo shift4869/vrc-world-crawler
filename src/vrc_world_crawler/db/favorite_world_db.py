@@ -15,12 +15,27 @@ class FavoriteWorldDB(Base):
     def __init__(self, db_path: str = "vrc.db"):
         super().__init__(db_path)
 
-    def select(self):
+    def select(self) -> list[FavoriteWorld]:
         Session = sessionmaker(bind=self.engine, autoflush=False)
         session = Session()
         result = session.query(FavoriteWorld).all()
         session.close()
         return result
+
+    def flag_clear(self) -> int:
+        """flag_clear
+
+        全レコードの is_favorited フラグをすべて False にする
+
+        Returns:
+            int: 成功時0
+        """
+        Session = sessionmaker(bind=self.engine, autoflush=False)
+        session = Session()
+        session.query(FavoriteWorld).update({FavoriteWorld.is_favorited: False})
+        session.commit()
+        session.close()
+        return 0
 
     def upsert(self, record: FavoriteWorld | list[FavoriteWorld]) -> list[int]:
         """upsert
@@ -69,6 +84,7 @@ class FavoriteWorldDB(Base):
                     p.author_name = r.author_name
                     p.favorite_id = r.favorite_id
                     p.favorite_group = r.favorite_group
+                    p.is_favorited = r.is_favorited
                     p.release_status = r.release_status
                     p.featured = r.featured
                     p.image_url = r.image_url
@@ -99,6 +115,7 @@ class FavoriteWorldDB(Base):
                     if p.release_status != r.release_status:
                         p.favorite_id = r.favorite_id
                         p.favorite_group = r.favorite_group
+                        p.is_favorited = r.is_favorited
                         p.release_status = r.release_status
                         p.registered_at = r.registered_at
                         msg = f"release_status from '{p.release_status}' to '{r.release_status}'"

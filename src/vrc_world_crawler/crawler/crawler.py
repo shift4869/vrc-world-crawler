@@ -26,7 +26,12 @@ class Crawler:
         logger.info("Crawler run -> start")
         fetched_info_list: list[FetchedInfo] = self.fetcher.fetch()
 
+        if not fetched_info_list:
+            logger.info("fetched_info_list is empty.")
+            return
+
         logger.info("DB control -> start.")
+        self.db.flag_clear()
         record_list = [FavoriteWorld.create(fetched_info.to_dict()) for fetched_info in fetched_info_list]
         self.db.upsert(record_list)
         logger.info("DB control -> done.")
