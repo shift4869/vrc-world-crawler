@@ -126,6 +126,7 @@ class TestFetchedInfo(unittest.TestCase):
             Params(True, 19, -1, ValueError, "updated_at is invalid"),
             Params(True, 20, -1, ValueError, "registered_at is invalid"),
             Params(True, 0, "invalid world_id str", ValueError, "world_id is invalid"),
+            Params(True, 9, "hidden", ValueError, "release_status is not 'public'"),
             Params(True, 16, "invalid published_at str", ValueError, "published_at is invalid"),
             Params(True, 17, "invalid lab_published_at str", ValueError, "lab_published_at is invalid"),
             Params(True, 18, "invalid created_at str", ValueError, "created_at is invalid"),
@@ -200,8 +201,8 @@ class TestFetchedInfo(unittest.TestCase):
             "visits": record[15],
             "publicationDate": to_utc(record[16]),
             "labsPublicationDate": to_utc(record[17]),
-            "created_at": to_utc(record[18]),
-            "updated_at": to_utc(record[19]),
+            "created_at": to_utc(record[18]) + "+00:00",
+            "updated_at": to_utc(record[19]) + "+00:00",
             # "registered_at": record[20],
         }
         instance = FetchedInfo.create(fetched_dict)
@@ -226,6 +227,46 @@ class TestFetchedInfo(unittest.TestCase):
             "lab_published_at": record[17],
             "created_at": record[18],
             "updated_at": record[19],
+            "registered_at": record[20],
+        }
+        actual = instance.to_dict()
+        self.assertEqual(expect, actual)
+
+        # release_status が "public" でない場合
+        record = self._get_valid_args()
+        record[9] = "hidden"
+        fetched_dict = {
+            "id": "???",
+            "name": "???",
+            "authorName": "???",
+            "favoriteId": record[6],
+            "favoriteGroup": record[7],
+            # "is_favorited": record[8],
+            "releaseStatus": record[9],
+            # "registered_at": record[20],
+        }
+        instance = FetchedInfo.create(fetched_dict)
+        expect = {
+            "world_id": "???",
+            "world_name": "???",
+            "world_url": "",
+            "description": "",
+            "author_id": "",
+            "author_name": "???",
+            "favorite_id": record[6],
+            "favorite_group": record[7],
+            "is_favorited": record[8],
+            "release_status": record[9],
+            "featured": -1,
+            "image_url": "",
+            "thmbnail_image_url": "",
+            "version": -1,
+            "star": -1,
+            "visit": -1,
+            "published_at": "",
+            "lab_published_at": "",
+            "created_at": "",
+            "updated_at": "",
             "registered_at": record[20],
         }
         actual = instance.to_dict()
