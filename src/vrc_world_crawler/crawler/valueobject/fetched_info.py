@@ -42,45 +42,45 @@ class FetchedInfo:
         if not isinstance(self.world_id, str):
             raise ValueError("world_id must be str.")
         if not isinstance(self.world_name, str):
-            raise ValueError("world_name must br str")
+            raise ValueError("world_name must be str")
         if not isinstance(self.world_url, str):
-            raise ValueError("world_url must br str")
+            raise ValueError("world_url must be str")
         if not isinstance(self.description, str):
-            raise ValueError("description must br str")
+            raise ValueError("description must be str")
         if not isinstance(self.author_id, str):
-            raise ValueError("author_id must br str")
+            raise ValueError("author_id must be str")
         if not isinstance(self.author_name, str):
-            raise ValueError("author_name must br str")
+            raise ValueError("author_name must be str")
         if not isinstance(self.favorite_id, str):
-            raise ValueError("favorite_id must br str")
+            raise ValueError("favorite_id must be str")
         if not isinstance(self.favorite_group, str):
-            raise ValueError("favorite_group must br str")
+            raise ValueError("favorite_group must be str")
         if not isinstance(self.is_favorited, bool):
-            raise ValueError("is_favorited must br bool")
+            raise ValueError("is_favorited must be bool")
         if not isinstance(self.release_status, str):
-            raise ValueError("release_status must br str")
+            raise ValueError("release_status must be str")
         if not isinstance(self.featured, int):
-            raise ValueError("featured must br int")
+            raise ValueError("featured must be int")
         if not isinstance(self.image_url, str):
-            raise ValueError("image_url must br str")
+            raise ValueError("image_url must be str")
         if not isinstance(self.thmbnail_image_url, str):
-            raise ValueError("thmbnail_image_url must br str")
+            raise ValueError("thmbnail_image_url must be str")
         if not isinstance(self.version, int):
-            raise ValueError("version must br int")
+            raise ValueError("version must be int")
         if not isinstance(self.star, int):
-            raise ValueError("star must br int")
+            raise ValueError("star must be int")
         if not isinstance(self.visit, int):
-            raise ValueError("visit must br int")
+            raise ValueError("visit must be int")
         if not isinstance(self.published_at, str):
-            raise ValueError("published_at must br str")
+            raise ValueError("published_at must be str")
         if not isinstance(self.lab_published_at, str):
-            raise ValueError("lab_published_at must br str")
+            raise ValueError("lab_published_at must be str")
         if not isinstance(self.created_at, str):
-            raise ValueError("created_at must br str")
+            raise ValueError("created_at must be str")
         if not isinstance(self.updated_at, str):
-            raise ValueError("updated_at must br str")
+            raise ValueError("updated_at must be str")
         if not isinstance(self.registered_at, str):
-            raise ValueError("registered_at must br str")
+            raise ValueError("registered_at must be str")
 
         # world_id フォーマットチェック
         if self.release_status == "public":

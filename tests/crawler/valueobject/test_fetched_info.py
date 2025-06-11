@@ -26,6 +26,7 @@ class TestFetchedInfo(unittest.TestCase):
             "author_name",
             "favorite_id",
             "favorite_group",
+            True,
             "public",
             0,
             "image_url",
@@ -70,18 +71,19 @@ class TestFetchedInfo(unittest.TestCase):
             self.assertEqual(record[5], instance.author_name)
             self.assertEqual(record[6], instance.favorite_id)
             self.assertEqual(record[7], instance.favorite_group)
-            self.assertEqual(record[8], instance.release_status)
-            self.assertEqual(record[9], instance.featured)
-            self.assertEqual(record[10], instance.image_url)
-            self.assertEqual(record[11], instance.thmbnail_image_url)
-            self.assertEqual(record[12], instance.version)
-            self.assertEqual(record[13], instance.star)
-            self.assertEqual(record[14], instance.visit)
-            self.assertEqual(record[15], instance.published_at)
-            self.assertEqual(record[16], instance.lab_published_at)
-            self.assertEqual(record[17], instance.created_at)
-            self.assertEqual(record[18], instance.updated_at)
-            self.assertEqual(record[19], instance.registered_at)
+            self.assertEqual(record[8], instance.is_favorited)
+            self.assertEqual(record[9], instance.release_status)
+            self.assertEqual(record[10], instance.featured)
+            self.assertEqual(record[11], instance.image_url)
+            self.assertEqual(record[12], instance.thmbnail_image_url)
+            self.assertEqual(record[13], instance.version)
+            self.assertEqual(record[14], instance.star)
+            self.assertEqual(record[15], instance.visit)
+            self.assertEqual(record[16], instance.published_at)
+            self.assertEqual(record[17], instance.lab_published_at)
+            self.assertEqual(record[18], instance.created_at)
+            self.assertEqual(record[19], instance.updated_at)
+            self.assertEqual(record[20], instance.registered_at)
 
             self.assertTrue(re.search("wrld_.*", instance.world_id))
             if instance.published_at:
@@ -97,11 +99,11 @@ class TestFetchedInfo(unittest.TestCase):
 
         params_list: list[Params] = [
             Params(False, None, None, None, "positive case"),
-            Params(True, 15, "", None, "published_at is empty"),
-            Params(True, 16, "", None, "lab_published_at is empty"),
-            Params(True, 17, "", None, "created_at is empty"),
-            Params(True, 18, "", None, "updated_at is empty"),
-            Params(True, 19, "", None, "registered_at is empty"),
+            Params(True, 16, "", None, "published_at is empty"),
+            Params(True, 17, "", None, "lab_published_at is empty"),
+            Params(True, 18, "", None, "created_at is empty"),
+            Params(True, 19, "", None, "updated_at is empty"),
+            Params(True, 20, "", None, "registered_at is empty"),
             Params(True, 0, -1, ValueError, "world_id is invalid"),
             Params(True, 1, -1, ValueError, "world_name is invalid"),
             Params(True, 2, -1, ValueError, "world_url is invalid"),
@@ -110,24 +112,25 @@ class TestFetchedInfo(unittest.TestCase):
             Params(True, 5, -1, ValueError, "author_name is invalid"),
             Params(True, 6, -1, ValueError, "favorite_id is invalid"),
             Params(True, 7, -1, ValueError, "favorite_group is invalid"),
-            Params(True, 8, -1, ValueError, "release_status is invalid"),
-            Params(True, 9, "invalid value", ValueError, "featured is invalid"),
-            Params(True, 10, -1, ValueError, "image_url is invalid"),
-            Params(True, 11, -1, ValueError, "thmbnail_image_url is invalid"),
-            Params(True, 12, "invalid value", ValueError, "version is invalid"),
-            Params(True, 13, "invalid value", ValueError, "star is invalid"),
-            Params(True, 14, "invalid value", ValueError, "visit is invalid"),
-            Params(True, 15, -1, ValueError, "published_at is invalid"),
-            Params(True, 16, -1, ValueError, "lab_published_at is invalid"),
-            Params(True, 17, -1, ValueError, "created_at is invalid"),
-            Params(True, 18, -1, ValueError, "updated_at is invalid"),
-            Params(True, 19, -1, ValueError, "registered_at is invalid"),
+            Params(True, 8, -1, ValueError, "is_favorited is invalid"),
+            Params(True, 9, -1, ValueError, "release_status is invalid"),
+            Params(True, 10, "invalid value", ValueError, "featured is invalid"),
+            Params(True, 11, -1, ValueError, "image_url is invalid"),
+            Params(True, 12, -1, ValueError, "thmbnail_image_url is invalid"),
+            Params(True, 13, "invalid value", ValueError, "version is invalid"),
+            Params(True, 14, "invalid value", ValueError, "star is invalid"),
+            Params(True, 15, "invalid value", ValueError, "visit is invalid"),
+            Params(True, 16, -1, ValueError, "published_at is invalid"),
+            Params(True, 17, -1, ValueError, "lab_published_at is invalid"),
+            Params(True, 18, -1, ValueError, "created_at is invalid"),
+            Params(True, 19, -1, ValueError, "updated_at is invalid"),
+            Params(True, 20, -1, ValueError, "registered_at is invalid"),
             Params(True, 0, "invalid world_id str", ValueError, "world_id is invalid"),
-            Params(True, 15, "invalid published_at str", ValueError, "published_at is invalid"),
-            Params(True, 16, "invalid lab_published_at str", ValueError, "lab_published_at is invalid"),
-            Params(True, 17, "invalid created_at str", ValueError, "created_at is invalid"),
-            Params(True, 18, "invalid updated_at str", ValueError, "updated_at is invalid"),
-            Params(True, 19, "invalid registered_at str", ValueError, "registered_at is invalid"),
+            Params(True, 16, "invalid published_at str", ValueError, "published_at is invalid"),
+            Params(True, 17, "invalid lab_published_at str", ValueError, "lab_published_at is invalid"),
+            Params(True, 18, "invalid created_at str", ValueError, "created_at is invalid"),
+            Params(True, 19, "invalid updated_at str", ValueError, "updated_at is invalid"),
+            Params(True, 20, "invalid registered_at str", ValueError, "registered_at is invalid"),
         ]
         for params in params_list:
             with self.subTest(params.msg):
@@ -152,18 +155,19 @@ class TestFetchedInfo(unittest.TestCase):
             "author_name": record[5],
             "favorite_id": record[6],
             "favorite_group": record[7],
-            "release_status": record[8],
-            "featured": record[9],
-            "image_url": record[10],
-            "thmbnail_image_url": record[11],
-            "version": record[12],
-            "star": record[13],
-            "visit": record[14],
-            "published_at": record[15],
-            "lab_published_at": record[16],
-            "created_at": record[17],
-            "updated_at": record[18],
-            "registered_at": record[19],
+            "is_favorited": record[8],
+            "release_status": record[9],
+            "featured": record[10],
+            "image_url": record[11],
+            "thmbnail_image_url": record[12],
+            "version": record[13],
+            "star": record[14],
+            "visit": record[15],
+            "published_at": record[16],
+            "lab_published_at": record[17],
+            "created_at": record[18],
+            "updated_at": record[19],
+            "registered_at": record[20],
         }
         actual = instance.to_dict()
         self.assertEqual(expect, actual)
@@ -186,17 +190,19 @@ class TestFetchedInfo(unittest.TestCase):
             "authorName": record[5],
             "favoriteId": record[6],
             "favoriteGroup": record[7],
-            "releaseStatus": record[8],
-            "featured": record[9],
-            "imageUrl": record[10],
-            "thumbnailImageUrl": record[11],
-            "version": record[12],
-            "favorites": record[13],
-            "visits": record[14],
-            "publicationDate": to_utc(record[15]),
-            "labsPublicationDate": to_utc(record[16]),
-            "created_at": to_utc(record[17]),
-            "updated_at": to_utc(record[18]),
+            # "is_favorited": record[8],
+            "releaseStatus": record[9],
+            "featured": record[10],
+            "imageUrl": record[11],
+            "thumbnailImageUrl": record[12],
+            "version": record[13],
+            "favorites": record[14],
+            "visits": record[15],
+            "publicationDate": to_utc(record[16]),
+            "labsPublicationDate": to_utc(record[17]),
+            "created_at": to_utc(record[18]),
+            "updated_at": to_utc(record[19]),
+            # "registered_at": record[20],
         }
         instance = FetchedInfo.create(fetched_dict)
         expect = {
@@ -208,18 +214,19 @@ class TestFetchedInfo(unittest.TestCase):
             "author_name": record[5],
             "favorite_id": record[6],
             "favorite_group": record[7],
-            "release_status": record[8],
-            "featured": record[9],
-            "image_url": record[10],
-            "thmbnail_image_url": record[11],
-            "version": record[12],
-            "star": record[13],
-            "visit": record[14],
-            "published_at": record[15],
-            "lab_published_at": record[16],
-            "created_at": record[17],
-            "updated_at": record[18],
-            "registered_at": record[19],
+            "is_favorited": record[8],
+            "release_status": record[9],
+            "featured": record[10],
+            "image_url": record[11],
+            "thmbnail_image_url": record[12],
+            "version": record[13],
+            "star": record[14],
+            "visit": record[15],
+            "published_at": record[16],
+            "lab_published_at": record[17],
+            "created_at": record[18],
+            "updated_at": record[19],
+            "registered_at": record[20],
         }
         actual = instance.to_dict()
         self.assertEqual(expect, actual)
