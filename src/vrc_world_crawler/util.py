@@ -42,6 +42,6 @@ def find_values(
 
 def to_jst(utc: datetime) -> datetime:
     if not isinstance(utc, datetime):
-        raise ValueError("args is not datetime.")
+        raise ValueError("utc must be datetime.")
     jst = utc + timedelta(hours=9)
     return jst
