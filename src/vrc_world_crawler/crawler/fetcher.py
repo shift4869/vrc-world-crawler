@@ -61,6 +61,21 @@ class Fetcher:
                             break
                         response_list.append(response_dict)
 
+            base_url = "https://vrchat.com/api/1/worlds/favorites?n=50&offset={}&tag=vrcPlusWorlds{}"
+            with httpx.Client(follow_redirects=True, transport=transport) as client:
+                for world_index in [1, 2, 3, 4]:
+                    for offset_count in [0, 50, 100, 150, 200, 250, 300]:
+                        url = base_url.format(offset_count, world_index)
+
+                        response = client.get(url, headers=headers, cookies=cookies)
+                        response.raise_for_status()
+                        if not response.text:
+                            break
+                        response_dict = orjson.loads(response.text)
+                        if not response_dict:
+                            break
+                        response_list.append(response_dict)
+
             if not response_list:
                 logger.info("Fetching -> failed")
                 raise ValueError("Fetching failed, null response.")

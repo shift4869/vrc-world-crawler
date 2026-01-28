@@ -1,4 +1,3 @@
-import time
 from logging import INFO, getLogger
 from pathlib import Path
 
