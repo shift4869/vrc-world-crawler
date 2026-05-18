@@ -7,8 +7,7 @@ from typing import Self
 
 import orjson
 
-from vrc_world_crawler.db.model import FavoriteWorld
-from vrc_world_crawler.util import find_values, to_jst
+from vrc_world_crawler.util import find_values, normalize_date_at
 
 
 @dataclass(frozen=True)
@@ -141,20 +140,6 @@ class FetchedInfo:
         Returns:
             Self: FetchedInfo インスタンス
         """
-
-        def normalize_date_at(date_at_str: str) -> str:
-            """日時文字列を日本時間に変換する
-
-            Args:
-                date_at_str (str): ISOフォーマットの日時文字列(UTC)
-
-            Returns:
-                str: ISOフォーマットの日時文字列(JST)
-            """
-            result = to_jst(datetime.fromisoformat(date_at_str)).isoformat()
-            if result.endswith("+00:00"):
-                result = result[:-6]
-            return result
 
         registered_at = datetime.now().isoformat()
         find = functools.partial(find_values, obj=fetched_dict, is_predict_one=True, key_white_list=[""])

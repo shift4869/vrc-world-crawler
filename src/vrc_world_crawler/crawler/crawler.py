@@ -5,6 +5,7 @@ from vrc_world_crawler.crawler.fetcher import Fetcher
 from vrc_world_crawler.crawler.valueobject.fetched_info import FetchedInfo
 from vrc_world_crawler.db.favorite_world_db import FavoriteWorldDB
 from vrc_world_crawler.db.model import FavoriteWorld
+from vrc_world_crawler.util import manage_cache_file
 
 logger = getLogger(__name__)
 logger.setLevel(INFO)
@@ -35,6 +36,9 @@ class Crawler:
         self.db.upsert(record_list)
         logger.info("DB control -> done.")
 
+        logger.info("Manage cache file -> start.")
+        manage_cache_file(Fetcher.cache_path)
+        logger.info("Manage cache file -> done.")
         logger.info("Crawler run -> done")
 
 
