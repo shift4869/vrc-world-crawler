@@ -64,7 +64,8 @@ class FavoriteWorldDB(Base):
             if r.release_status == "public":
                 try:
                     q = (
-                        session.query(FavoriteWorld)
+                        session
+                        .query(FavoriteWorld)
                         .filter(and_(FavoriteWorld.world_id == r.world_id))
                         .with_for_update()
                     )
@@ -88,7 +89,7 @@ class FavoriteWorldDB(Base):
                     p.release_status = r.release_status
                     p.featured = r.featured
                     p.image_url = r.image_url
-                    p.thmbnail_image_url = r.thmbnail_image_url
+                    p.thumbnail_image_url = r.thumbnail_image_url
                     p.version = r.version
                     p.star = r.star
                     p.visit = r.visit

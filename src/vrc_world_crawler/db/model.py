@@ -24,7 +24,7 @@ class FavoriteWorld(Base):
     release_status = Column(String(256), nullable=False)
     featured = Column(Integer, nullable=False)
     image_url = Column(String(512))
-    thmbnail_image_url = Column(String(512))
+    thumbnail_image_url = Column(String(512))
     version = Column(Integer, nullable=False)
     star = Column(Integer, nullable=False)
     visit = Column(Integer, nullable=False)
@@ -48,7 +48,7 @@ class FavoriteWorld(Base):
         release_status: str,
         featured: str,
         image_url: str,
-        thmbnail_image_url: str,
+        thumbnail_image_url: str,
         version: int,
         star: int,
         visit: int,
@@ -71,7 +71,7 @@ class FavoriteWorld(Base):
         self.release_status = release_status
         self.featured = featured
         self.image_url = image_url
-        self.thmbnail_image_url = thmbnail_image_url
+        self.thumbnail_image_url = thumbnail_image_url
         self.version = version
         self.star = star
         self.visit = visit
@@ -97,7 +97,7 @@ class FavoriteWorld(Base):
                 "release_status": release_status,
                 "featured": featured,
                 "image_url": image_url,
-                "thmbnail_image_url": thmbnail_image_url,
+                "thumbnail_image_url": thumbnail_image_url,
                 "version": version,
                 "star": star,
                 "visit": visit,
@@ -120,7 +120,7 @@ class FavoriteWorld(Base):
                     release_status,
                     featured,
                     image_url,
-                    thmbnail_image_url,
+                    thumbnail_image_url,
                     version,
                     star,
                     visit,
@@ -153,7 +153,7 @@ class FavoriteWorld(Base):
             "release_status": self.release_status,
             "featured": self.featured,
             "image_url": self.image_url,
-            "thmbnail_image_url": self.thmbnail_image_url,
+            "thumbnail_image_url": self.thumbnail_image_url,
             "version": self.version,
             "star": self.star,
             "visit": self.visit,

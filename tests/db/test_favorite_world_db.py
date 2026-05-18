@@ -31,7 +31,7 @@ class TestFavoriteWorldDB(unittest.TestCase):
             "release_status": "public",
             "featured": 0,
             "image_url": "image_url",
-            "thmbnail_image_url": "thmbnail_image_url",
+            "thumbnail_image_url": "thumbnail_image_url",
             "version": 1,
             "star": 0,
             "visit": 0,

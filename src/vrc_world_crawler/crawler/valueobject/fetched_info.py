@@ -25,7 +25,7 @@ class FetchedInfo:
     release_status: str
     featured: int
     image_url: str
-    thmbnail_image_url: str
+    thumbnail_image_url: str
     version: int
     star: int
     visit: int
@@ -63,8 +63,8 @@ class FetchedInfo:
             raise ValueError("featured must be int")
         if not isinstance(self.image_url, str):
             raise ValueError("image_url must be str")
-        if not isinstance(self.thmbnail_image_url, str):
-            raise ValueError("thmbnail_image_url must be str")
+        if not isinstance(self.thumbnail_image_url, str):
+            raise ValueError("thumbnail_image_url must be str")
         if not isinstance(self.version, int):
             raise ValueError("version must be int")
         if not isinstance(self.star, int):
@@ -117,7 +117,7 @@ class FetchedInfo:
             "release_status": self.release_status,
             "featured": self.featured,
             "image_url": self.image_url,
-            "thmbnail_image_url": self.thmbnail_image_url,
+            "thumbnail_image_url": self.thumbnail_image_url,
             "version": self.version,
             "star": self.star,
             "visit": self.visit,
@@ -208,7 +208,7 @@ class FetchedInfo:
         is_favorited = True
         featured = 1 if bool(find(key="featured")) else 0
         image_url = find(key="imageUrl")
-        thmbnail_image_url = find(key="thumbnailImageUrl")
+        thumbnail_image_url = find(key="thumbnailImageUrl")
         version = int(find(key="version"))
         star = int(find(key="favorites"))
         visit = int(find(key="visits"))
@@ -232,7 +232,7 @@ class FetchedInfo:
             release_status,
             featured,
             image_url,
-            thmbnail_image_url,
+            thumbnail_image_url,
             version,
             star,
             visit,

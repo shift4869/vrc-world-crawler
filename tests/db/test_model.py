@@ -27,7 +27,7 @@ class TestFavoriteWorld(unittest.TestCase):
             "public",
             0,
             "image_url",
-            "thmbnail_image_url",
+            "thumbnail_image_url",
             1,
             0,
             0,
@@ -51,7 +51,7 @@ class TestFavoriteWorld(unittest.TestCase):
         self.assertEqual(expect[9], actual.release_status)
         self.assertEqual(expect[10], actual.featured)
         self.assertEqual(expect[11], actual.image_url)
-        self.assertEqual(expect[12], actual.thmbnail_image_url)
+        self.assertEqual(expect[12], actual.thumbnail_image_url)
         self.assertEqual(expect[13], actual.version)
         self.assertEqual(expect[14], actual.star)
         self.assertEqual(expect[15], actual.visit)
@@ -81,7 +81,7 @@ class TestFavoriteWorld(unittest.TestCase):
             "release_status": record[9],
             "featured": record[10],
             "image_url": record[11],
-            "thmbnail_image_url": record[12],
+            "thumbnail_image_url": record[12],
             "version": record[13],
             "star": record[14],
             "visit": record[15],
@@ -131,7 +131,7 @@ class TestFavoriteWorld(unittest.TestCase):
             "release_status": record[9],
             "featured": record[10],
             "image_url": record[11],
-            "thmbnail_image_url": record[12],
+            "thumbnail_image_url": record[12],
             "version": record[13],
             "star": record[14],
             "visit": record[15],

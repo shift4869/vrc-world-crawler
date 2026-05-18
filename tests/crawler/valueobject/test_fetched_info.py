@@ -30,7 +30,7 @@ class TestFetchedInfo(unittest.TestCase):
             "public",
             0,
             "image_url",
-            "thmbnail_image_url",
+            "thumbnail_image_url",
             1,
             0,
             0,
@@ -75,7 +75,7 @@ class TestFetchedInfo(unittest.TestCase):
             self.assertEqual(record[9], instance.release_status)
             self.assertEqual(record[10], instance.featured)
             self.assertEqual(record[11], instance.image_url)
-            self.assertEqual(record[12], instance.thmbnail_image_url)
+            self.assertEqual(record[12], instance.thumbnail_image_url)
             self.assertEqual(record[13], instance.version)
             self.assertEqual(record[14], instance.star)
             self.assertEqual(record[15], instance.visit)
@@ -116,7 +116,7 @@ class TestFetchedInfo(unittest.TestCase):
             Params(True, 9, -1, ValueError, "release_status is invalid"),
             Params(True, 10, "invalid value", ValueError, "featured is invalid"),
             Params(True, 11, -1, ValueError, "image_url is invalid"),
-            Params(True, 12, -1, ValueError, "thmbnail_image_url is invalid"),
+            Params(True, 12, -1, ValueError, "thumbnail_image_url is invalid"),
             Params(True, 13, "invalid value", ValueError, "version is invalid"),
             Params(True, 14, "invalid value", ValueError, "star is invalid"),
             Params(True, 15, "invalid value", ValueError, "visit is invalid"),
@@ -160,7 +160,7 @@ class TestFetchedInfo(unittest.TestCase):
             "release_status": record[9],
             "featured": record[10],
             "image_url": record[11],
-            "thmbnail_image_url": record[12],
+            "thumbnail_image_url": record[12],
             "version": record[13],
             "star": record[14],
             "visit": record[15],
@@ -219,7 +219,7 @@ class TestFetchedInfo(unittest.TestCase):
             "release_status": record[9],
             "featured": record[10],
             "image_url": record[11],
-            "thmbnail_image_url": record[12],
+            "thumbnail_image_url": record[12],
             "version": record[13],
             "star": record[14],
             "visit": record[15],
@@ -259,7 +259,7 @@ class TestFetchedInfo(unittest.TestCase):
             "release_status": record[9],
             "featured": -1,
             "image_url": "",
-            "thmbnail_image_url": "",
+            "thumbnail_image_url": "",
             "version": -1,
             "star": -1,
             "visit": -1,
