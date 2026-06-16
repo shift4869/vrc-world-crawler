@@ -28,6 +28,7 @@ class FavoriteWorld(Base):
     version = Column(Integer, nullable=False)
     star = Column(Integer, nullable=False)
     visit = Column(Integer, nullable=False)
+    tags = Column(String(512))
     published_at = Column(String(256))
     lab_published_at = Column(String(256))
     created_at = Column(String(256), nullable=False)
@@ -52,6 +53,7 @@ class FavoriteWorld(Base):
         version: int,
         star: int,
         visit: int,
+        tags: str,
         published_at: str,
         lab_published_at: str,
         created_at: str,
@@ -75,6 +77,7 @@ class FavoriteWorld(Base):
         self.version = version
         self.star = star
         self.visit = visit
+        self.tags = tags
         self.published_at = published_at
         self.lab_published_at = lab_published_at
         self.created_at = created_at
@@ -101,6 +104,7 @@ class FavoriteWorld(Base):
                 "version": version,
                 "star": star,
                 "visit": visit,
+                "tags": tags,
                 "published_at": published_at,
                 "lab_published_at": lab_published_at,
                 "created_at": created_at,
@@ -124,6 +128,7 @@ class FavoriteWorld(Base):
                     version,
                     star,
                     visit,
+                    tags,
                     published_at,
                     lab_published_at,
                     created_at,
@@ -157,6 +162,7 @@ class FavoriteWorld(Base):
             "version": self.version,
             "star": self.star,
             "visit": self.visit,
+            "tags": self.tags,
             "published_at": self.published_at,
             "lab_published_at": self.lab_published_at,
             "created_at": self.created_at,

@@ -8,7 +8,7 @@ import orjson
 
 from vrc_world_crawler.db.favorite_world_db import FavoriteWorldDB
 from vrc_world_crawler.db.model import FavoriteWorld
-from vrc_world_crawler.util import normalize_date_at
+from vrc_world_crawler.util import normalize_date_at, tags_join
 
 logger = getLogger(__name__)
 logger.setLevel(INFO)
@@ -76,6 +76,7 @@ def manual_register(url: str) -> None:
         "version": response_dict["version"],
         "star": 0,
         "visit": response_dict["visits"],
+        "tags": tags_join(response_dict["tags"]),
         "published_at": "",
         "lab_published_at": "",
         "created_at": normalize_date_at(response_dict["created_at"]),
@@ -91,5 +92,6 @@ def manual_register(url: str) -> None:
 
 
 if __name__ == "__main__":
-    url = "https://vrchat.com/home/world/wrld_fb2d8457-c02e-400b-aeb1-dde094f0f912/info"
+    # url = "https://vrchat.com/home/world/wrld_fb2d8457-c02e-400b-aeb1-dde094f0f912/info"
+    url = "https://vrchat.com/home/world/wrld_508f000a-34c5-4dbf-8f12-4a00669d3a90/info"
     manual_register(url)

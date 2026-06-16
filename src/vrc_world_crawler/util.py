@@ -66,6 +66,52 @@ def normalize_date_at(date_at_str: str) -> str:
     return result
 
 
+def tags_join(tags: list[str]) -> str:
+    """タグ配列を文字列に整形する
+
+    Args:
+        tags (list[str]): webページから取得したタグ配列
+
+    Note:
+        整形について：
+        タグの中の"author_tag_" は削除する
+        "approved" を含むタグは出力に含めない
+        タグはすべてアルファベット小文字に変換する
+        区切り文字は '|' とする
+
+    Returns:
+        str: 整形後の文字列
+    """
+    if not isinstance(tags, list):
+        return ""
+    if not all([isinstance(tag, str) for tag in tags]):
+        return ""
+
+    sanitized_tags: list[str] = []
+    for tag in tags:
+        t = tag
+        if t.startswith("author_tag_"):
+            t = t.replace("author_tag_", "")
+        if "approved" in tag:
+            continue
+        sanitized_tags.append(t.lower())
+    return "|".join(sanitized_tags)
+
+
+def tags_split(tags_string: str) -> list[str]:
+    """文字列をタグ配列として解釈する
+
+    Args:
+        tags_string: 整形済の文字列
+
+    Returns:
+        list[str]: タグ配列
+    """
+    if not isinstance(tags_string, str):
+        return []
+    return tags_string.split("|")
+
+
 def manage_cache_file(base_path: Path) -> None:
     """base_path 内のファイルを以下のように仕分けしてアーカイブする
 

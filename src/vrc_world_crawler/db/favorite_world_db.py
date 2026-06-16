@@ -93,6 +93,7 @@ class FavoriteWorldDB(Base):
                     p.version = r.version
                     p.star = r.star
                     p.visit = r.visit
+                    p.tags = r.tags
                     p.published_at = r.published_at
                     p.lab_published_at = r.lab_published_at
                     p.created_at = r.created_at
@@ -156,6 +157,7 @@ class FavoriteWorldDB(Base):
                         p.version = r.version
                         p.star = r.star
                         p.visit = r.visit
+                        p.tags = r.tags
                         p.published_at = r.published_at
                         p.lab_published_at = r.lab_published_at
                         p.created_at = r.created_at

@@ -7,7 +7,7 @@ from typing import Self
 
 import orjson
 
-from vrc_world_crawler.util import find_values, normalize_date_at
+from vrc_world_crawler.util import find_values, normalize_date_at, tags_join
 
 
 @dataclass(frozen=True)
@@ -28,6 +28,7 @@ class FetchedInfo:
     version: int
     star: int
     visit: int
+    tags: str
     published_at: str
     lab_published_at: str
     created_at: str
@@ -70,6 +71,8 @@ class FetchedInfo:
             raise ValueError("star must be int")
         if not isinstance(self.visit, int):
             raise ValueError("visit must be int")
+        if not isinstance(self.tags, str):
+            raise ValueError("tags must be str")
         if not isinstance(self.published_at, str):
             raise ValueError("published_at must be str")
         if not isinstance(self.lab_published_at, str):
@@ -120,6 +123,7 @@ class FetchedInfo:
             "version": self.version,
             "star": self.star,
             "visit": self.visit,
+            "tags": self.tags,
             "published_at": self.published_at,
             "lab_published_at": self.lab_published_at,
             "created_at": self.created_at,
@@ -157,6 +161,7 @@ class FetchedInfo:
             author_name = find(key="authorName")
             favorite_id = find(key="favoriteId")
             favorite_group = find(key="favoriteGroup")
+            tags = tags_join(find(key="tags"))
             is_favorited = True
             return FetchedInfo(
                 world_id,
@@ -175,6 +180,7 @@ class FetchedInfo:
                 -1,
                 -1,
                 -1,
+                tags,
                 "",
                 "",
                 "",
@@ -197,6 +203,7 @@ class FetchedInfo:
         version = int(find(key="version"))
         star = int(find(key="favorites"))
         visit = int(find(key="visits"))
+        tags = tags_join(find(key="tags"))
         published_at_str = find(key="publicationDate")
         published_at = "" if published_at_str == "none" else normalize_date_at(published_at_str)
         lab_published_at_str = find(key="labsPublicationDate")
@@ -221,6 +228,7 @@ class FetchedInfo:
             version,
             star,
             visit,
+            tags,
             published_at,
             lab_published_at,
             created_at,
