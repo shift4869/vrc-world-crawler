@@ -126,3 +126,5 @@ log*.txt*
 /no_trace
 /data
 cache/
+*.csv
+*.json
