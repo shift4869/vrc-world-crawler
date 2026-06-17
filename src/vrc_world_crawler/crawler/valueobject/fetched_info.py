@@ -3,10 +3,13 @@ import re
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Self
+from typing import Any, Self
 
 import orjson
 
+from vrc_world_crawler.crawler.valueobject.world_id import WorldId
+from vrc_world_crawler.crawler.valueobject.world_url import WorldUrl
+from vrc_world_crawler.db.favorite_world_db import FavoriteWorldDB
 from vrc_world_crawler.util import find_values, normalize_date_at, tags_join
 
 
@@ -85,12 +88,8 @@ class FetchedInfo:
             raise ValueError("registered_at must be str")
 
         # world_id フォーマットチェック
-        if self.release_status == "public":
-            if not re.search("wrld_.*", self.world_id):
-                raise ValueError("world_id must be 'wrld_.*'.")
-        else:
-            if self.world_id != "???":
-                raise ValueError("Not available world_id must be '???'.")
+        if not (re.search(WorldId.WORLD_ID_PATTERN, self.world_id) or self.world_id == "???"):
+            raise ValueError("world_id must be 'wrld_.*' or '???'.")
 
         # 日付系フォーマットチェック
         # 空、もしくはISOフォーマットの文字列のみ受け付ける
@@ -137,66 +136,150 @@ class FetchedInfo:
 
         fetch データの辞書解析を行う
         fetch データの辞書構造が変わった・取得情報の参照元が変わった場合はこのメソッドを更新する
+        値について、上から優先とする
+            (1)fetched_dict で渡された辞書について、キーが完全ならば fetched_dict の値を使う
+            (2)既にDBに格納済の場合、DBに格納されている値を使う
+            (3)DBに格納されていない場合、不完全な fetched_dict にあればそれを使う
+            (4)各項目のデフォルト値
+        ただし fetched_dict はキーとして "id" または "worldId" または "worldUrl" の最低でもどれか一つを持つ必要がある
+
+        このメソッドでは上記の優先度を加味した値の設定を行う
+        各項目の型チェックは __post_init__ で行う
 
         Args:
-            fetched_dict (dict): fetch したデータ辞書の1レコード
+            fetched_dict (dict): fetch したデータ辞書の1レコードを想定した辞書
+                キーとして "id" または  "worldId" または "worldUrl" の最低でもどれか一つを持つ必要がある
 
         Returns:
             Self: FetchedInfo インスタンス
         """
+        # 入力チェック
+        required_keys = ["id", "worldId", "worldUrl"]
+        if not bool(set(fetched_dict.keys()) & set(required_keys)):
+            # 必須のキーを一つも含んでいない
+            raise ValueError("fetched_dict key error.")
+
+        # world_id と world_url セット
+        world_id = ""
+        world_url = ""
+        if "id" in fetched_dict:
+            world_id = WorldId.create(fetched_dict["id"]).to_str()
+            world_url = WorldUrl.create(world_id).to_str() if world_id != "???" else "???"
+        elif "worldId" in fetched_dict:
+            world_id = WorldId.create(fetched_dict["worldId"]).to_str()
+            world_url = WorldUrl.create(world_id).to_str() if world_id != "???" else "???"
+        else:  # "worldUrl" in fetched_dict:
+            world_url = WorldUrl.create(fetched_dict["worldUrl"])
+            world_id = world_url.to_id().to_str()
+            world_url = world_url.to_str()
+        if world_id == "" or world_url == "":
+            # 必須のキーを一つも含んでいない
+            raise ValueError("fetched_dict key error.")
+        fetched_dict |= {"worldId": world_id}
+        fetched_dict |= {"worldUrl": world_url}
 
         registered_at = datetime.now().isoformat()
-        find = functools.partial(find_values, obj=fetched_dict, is_predict_one=True, key_white_list=[""])
+        default_dict = {
+            "worldId": "???",
+            "name": "???",
+            "worldUrl": "???",
+            "description": "",
+            "authorId": "???",
+            "authorName": "???",
+            "favoriteId": "???",
+            "favoriteGroup": "???",
+            "isFavorited": False,
+            "releaseStatus": "private",
+            "featured": 0,
+            "imageUrl": "",
+            "thumbnailImageUrl": "",
+            "version": 0,
+            "favorites": 0,
+            "visits": 0,
+            "tags": "",
+            "publicationDate": "",
+            "labsPublicationDate": "",
+            "created_at": registered_at,
+            "updated_at": registered_at,
+        }
+        perfect_keys = list(default_dict.keys())
+        is_input_key_is_perfect = len(set(fetched_dict.keys()) & set(perfect_keys)) == len(perfect_keys)
+
+        db: FavoriteWorldDB = None
+        if not is_input_key_is_perfect:
+            db = FavoriteWorldDB()
+
+        record_dict = {}
+        if db:
+            r = db.select_from_world_id(world_id)
+            if (not r) and ("favoriteId" in fetched_dict):
+                r = db.select_from_favorite_id(fetched_dict["favoriteId"])
+            if r:
+                for key, value in zip(perfect_keys, r.to_dict().values()):
+                    record_dict[key] = value
+                fetched_dict = {}
+                world_id = record_dict["worldId"]
+                world_url = record_dict["worldUrl"]
+
+        registered_at = datetime.now().isoformat()
+        # find = functools.partial(find_values, obj=fetched_dict, is_predict_one=True, key_white_list=[""])
 
         # fetch データの辞書解析
-        release_status = find(key="releaseStatus")
-        if release_status != "public":
-            # release_status が "public" でない場合
-            # 現在公開されていないワールドの可能性が高い
-            # 取得できる情報のみ取得する
-            # ただし world_id, world_name, author_name は "???" となっているため実質的に情報を持たない
-            # favorite_id は有効なのでこれで紐づける
-            world_id = find(key="id")
-            world_name = find(key="name")
-            author_name = find(key="authorName")
-            favorite_id = find(key="favoriteId")
-            favorite_group = find(key="favoriteGroup")
-            tags = tags_join(find(key="tags"))
-            is_favorited = True
-            return FetchedInfo(
-                world_id,
-                world_name,
-                "",
-                "",
-                "",
-                author_name,
-                favorite_id,
-                favorite_group,
-                is_favorited,
-                release_status,
-                -1,
-                "",
-                "",
-                -1,
-                -1,
-                -1,
-                tags,
-                "",
-                "",
-                "",
-                "",
-                registered_at,
-            )
+        # release_status = find(key="releaseStatus")
+        # if release_status != "public":
+        #     # release_status が "public" でない場合
+        #     # 現在公開されていないワールドの可能性が高い
+        #     # 取得できる情報のみ取得する
+        #     # ただし world_id, world_name, author_name は "???" となっているため実質的に情報を持たない
+        #     # favorite_id は有効なのでこれで紐づける
+        #     world_id = find(key="id")
+        #     world_name = find(key="name")
+        #     author_name = find(key="authorName")
+        #     favorite_id = find(key="favoriteId")
+        #     favorite_group = find(key="favoriteGroup")
+        #     tags = tags_join(find(key="tags"))
+        #     is_favorited = True
+        #     return FetchedInfo(
+        #         world_id,
+        #         world_name,
+        #         "",
+        #         "",
+        #         "",
+        #         author_name,
+        #         favorite_id,
+        #         favorite_group,
+        #         is_favorited,
+        #         release_status,
+        #         -1,
+        #         "",
+        #         "",
+        #         -1,
+        #         -1,
+        #         -1,
+        #         tags,
+        #         "",
+        #         "",
+        #         "",
+        #         "",
+        #         registered_at,
+        #     )
+        def find(key: str) -> Any:
+            if key in fetched_dict:
+                return fetched_dict[key]
+            if key in record_dict:
+                return record_dict[key]
+            if key in default_dict:
+                return default_dict[key]
+            raise ValueError(f"not found key error: {key}")
 
-        world_id = find(key="id")
         world_name = find(key="name")
-        world_url = f"https://vrchat.com/home/world/{world_id}"
         description = find(key="description")
         author_id = find(key="authorId")
         author_name = find(key="authorName")
         favorite_id = find(key="favoriteId")
         favorite_group = find(key="favoriteGroup")
-        is_favorited = True
+        is_favorited = find(key="isFavorited")
+        release_status = find(key="releaseStatus")
         featured = 1 if bool(find(key="featured")) else 0
         image_url = find(key="imageUrl")
         thumbnail_image_url = find(key="thumbnailImageUrl")
@@ -205,9 +288,15 @@ class FetchedInfo:
         visit = int(find(key="visits"))
         tags = tags_join(find(key="tags"))
         published_at_str = find(key="publicationDate")
-        published_at = "" if published_at_str == "none" else normalize_date_at(published_at_str)
+        published_at = (
+            "" if published_at_str == "none" or published_at_str == "" else normalize_date_at(published_at_str)
+        )
         lab_published_at_str = find(key="labsPublicationDate")
-        lab_published_at = "" if lab_published_at_str == "none" else normalize_date_at(lab_published_at_str)
+        lab_published_at = (
+            ""
+            if lab_published_at_str == "none" or lab_published_at_str == ""
+            else normalize_date_at(lab_published_at_str)
+        )
         created_at = normalize_date_at(find(key="created_at"))
         updated_at = normalize_date_at(find(key="updated_at"))
 
@@ -238,6 +327,7 @@ class FetchedInfo:
 
 
 if __name__ == "__main__":
+    fetched_info = FetchedInfo.create({"worldId": -1})
     import pprint
 
     cache_path = Path("./cache/")
