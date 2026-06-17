@@ -213,7 +213,8 @@ class FetchedInfo:
         if db:
             r = db.select_from_world_id(world_id)
             if (not r) and ("favoriteId" in fetched_dict):
-                r = db.select_from_favorite_id(fetched_dict["favoriteId"])
+                if fetched_dict["favoriteId"] != "手動登録":
+                    r = db.select_from_favorite_id(fetched_dict["favoriteId"])
             if r:
                 for key, value in zip(perfect_keys, r.to_dict().values()):
                     record_dict[key] = value
@@ -286,7 +287,8 @@ class FetchedInfo:
         version = int(find(key="version"))
         star = int(find(key="favorites"))
         visit = int(find(key="visits"))
-        tags = tags_join(find(key="tags"))
+        tag = find(key="tags")
+        tags = tag if isinstance(tag, str) and "|" in tag else tags_join(tag)
         published_at_str = find(key="publicationDate")
         published_at = (
             "" if published_at_str == "none" or published_at_str == "" else normalize_date_at(published_at_str)

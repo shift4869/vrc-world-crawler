@@ -24,6 +24,6 @@ if __name__ == "__main__":
         # "https://vrchat.com/home/world/wrld_f612c90d-1a12-4355-8683-215c3a34c8ed/info",  # public
         # "https://vrchat.com/home/world/wrld_fb2d8457-c02e-400b-aeb1-dde094f0f912/info",  # private
         # "https://vrchat.com/home/world/wrld_8d534a31-7080-4284-9cae-cfa5a4da2170/info",  # private
-        "https://vrchat.com/home/world/wrld_7edc99f7-653f-4939-8d2e-30c72c69e8e9/info",
+        "https://vrchat.com/home/world/wrld_4ef01e47-0900-43ab-ba66-ee9f9fde9349/info",
     ]
     manual_register(url_list)

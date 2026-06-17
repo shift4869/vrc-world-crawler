@@ -9,6 +9,7 @@ from vrc_world_crawler.crawler.valueobject.world_id import WorldId
 class WorldUrl:
     WORLD_URL_PATTERN1 = r"https://vrchat.com/home/world/wrld_(.*?)/info"
     WORLD_URL_PATTERN2 = r"https://vrchat.com/home/world/wrld_(.*)"
+    BASE_DOMAIN = "https://vrchat.com/home/world/"
     world_url: str
 
     def __post_init__(self) -> None:
@@ -48,16 +49,19 @@ class WorldUrl:
             Self: WorldUrl インスタンス
         """
         if isinstance(world_id_or_url, WorldUrl):
-            return WorldUrl(str(world_id_or_url))
+            world_url = world_id_or_url
+            return WorldUrl(world_url.to_str())
         if isinstance(world_id_or_url, WorldId):
-            return WorldUrl(WorldUrl.WORLD_URL_PATTERN2.replace("(.*)", "") + str(world_id_or_url))
+            world_id = world_id_or_url
+            return WorldUrl(WorldUrl.BASE_DOMAIN + world_id.to_str())
         elif isinstance(world_id_or_url, str):
-            if re.search(WorldUrl.WORLD_URL_PATTERN1, world_id_or_url) or re.search(
-                WorldUrl.WORLD_URL_PATTERN2, world_id_or_url
-            ):
-                return WorldUrl(world_id_or_url)
+            if world_id_or_url.startswith("http"):
+                world_url = world_id_or_url
+                return WorldUrl(world_url)
             else:
-                return WorldUrl(WorldUrl.WORLD_URL_PATTERN2.replace("(.*)", "") + world_id_or_url)
+                world_id = world_id_or_url
+                return WorldUrl(WorldUrl.BASE_DOMAIN + world_id)
+
         raise ValueError
 
 

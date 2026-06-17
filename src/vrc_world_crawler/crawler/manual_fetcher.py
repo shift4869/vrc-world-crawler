@@ -62,35 +62,26 @@ class ManualFetcher(FetcherBase):
 
     def _create_fetched_info(self, fetched_dict_list: list[dict]) -> list[FetchedInfo]:
         fetched_info_list: list[FetchedInfo] = []
-        registered_at = datetime.now().isoformat()
         db = FavoriteWorldDB()
         for fetched_dict in fetched_dict_list:
             world_url = WorldUrl.create(fetched_dict["world_url"])
-            world_id = str(world_url.to_id())
+            world_id = world_url.to_id().to_str()
+
             record = db.select_from_world_id(world_id)
-            fetched_info_dict = {
+
+            favorite_id = fetched_dict.get("favoriteId", "")
+            if not favorite_id:
+                favorite_id = record.favorite_id if record else "手動登録"
+
+            favorite_group = fetched_dict.get("favoriteGroup", "")
+            if not favorite_group:
+                favorite_group = record.favorite_group if record else "手動登録"
+
+            fetched_info_dict = fetched_dict | {
                 "id": world_id,
-                "name": fetched_dict["name"],
-                "worldUrl": str(world_url),
-                "description": fetched_dict["description"],
-                "authorId": fetched_dict["authorId"],
-                "authorName": fetched_dict["authorName"],
-                "favoriteId": record.favorite_id if record else "",
-                "favoriteGroup": record.favorite_group if record else "手動登録",
-                "isFavorited": record.is_favorited if record else False,
-                "releaseStatus": fetched_dict["releaseStatus"],
-                "featured": fetched_dict["featured"],
-                "imageUrl": fetched_dict["imageUrl"],
-                "thumbnailImageUrl": fetched_dict["thumbnailImageUrl"],
-                "version": fetched_dict["version"],
-                "favorites": fetched_dict["favorites"],
-                "visits": fetched_dict["visits"],
-                "tags": tags_join(fetched_dict["tags"]),
-                "publicationDate": record.published_at if record else "",
-                "labsPublicationDate": record.lab_published_at if record else "",
-                "created_at": normalize_date_at(fetched_dict["created_at"]),
-                "updated_at": normalize_date_at(fetched_dict["updated_at"]),
-                "registered_at": registered_at,
+                "worldUrl": world_url.to_str(),
+                "favoriteId": favorite_id,
+                "favoriteGroup": favorite_group,
             }
             fetched_info = FetchedInfo.create(fetched_info_dict)
             fetched_info_list.append(fetched_info)
@@ -108,7 +99,7 @@ if __name__ == "__main__":
         # "https://vrchat.com/home/world/wrld_f612c90d-1a12-4355-8683-215c3a34c8ed/info",  # public
         # "https://vrchat.com/home/world/wrld_fb2d8457-c02e-400b-aeb1-dde094f0f912/info",  # private
         # "https://vrchat.com/home/world/wrld_8d534a31-7080-4284-9cae-cfa5a4da2170/info",  # private
-        "https://vrchat.com/home/world/wrld_7edc99f7-653f-4939-8d2e-30c72c69e8e9/info",
+        "https://vrchat.com/home/world/wrld_4ef01e47-0900-43ab-ba66-ee9f9fde9349/info",
     ]
     fetcher = ManualFetcher(url, config_path, is_debug=False)
     response = fetcher.fetch()
