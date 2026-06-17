@@ -22,6 +22,20 @@ class FavoriteWorldDB(Base):
         session.close()
         return result
 
+    def select_from_world_id(self, world_id: str) -> FavoriteWorld | None:
+        Session = sessionmaker(bind=self.engine, autoflush=False)
+        session = Session()
+        result = session.query(FavoriteWorld).filter(FavoriteWorld.world_id == world_id).one_or_none()
+        session.close()
+        return result
+
+    def select_from_favorite_id(self, favorite_id: str) -> FavoriteWorld | None:
+        Session = sessionmaker(bind=self.engine, autoflush=False)
+        session = Session()
+        result = session.query(FavoriteWorld).filter(FavoriteWorld.favorite_id == favorite_id).one_or_none()
+        session.close()
+        return result
+
     def clear_favorited(self) -> int:
         """flag_clear
 

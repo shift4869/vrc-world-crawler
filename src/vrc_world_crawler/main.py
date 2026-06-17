@@ -30,7 +30,10 @@ def main() -> None:
         crawler.run()
     elif args.mode == "manual":
         logger.info("Running mode is manual.")
-        manual_register(args.url)
+        url = args.url
+        if isinstance(url, str):
+            url = [url]
+        manual_register(url)
     else:
         logger.wa("Running mode is invalid.")
 

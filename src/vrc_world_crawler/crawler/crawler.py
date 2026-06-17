@@ -1,8 +1,8 @@
 from logging import INFO, getLogger
 from pathlib import Path
 
-from vrc_world_crawler.crawler.fetcher import Fetcher
 from vrc_world_crawler.crawler.valueobject.fetched_info import FetchedInfo
+from vrc_world_crawler.crawler.web_fetcher import WebFetcher
 from vrc_world_crawler.db.favorite_world_db import FavoriteWorldDB
 from vrc_world_crawler.db.model import FavoriteWorld
 from vrc_world_crawler.util import manage_cache_file
@@ -13,13 +13,13 @@ logger.setLevel(INFO)
 
 class Crawler:
     config_path: Path = Path("./config/config.json")
-    fetcher: Fetcher
+    fetcher: WebFetcher
     db: FavoriteWorldDB
 
     def __init__(self) -> None:
         logger.info("Crawler init -> start")
-        self.fetcher = Fetcher(self.config_path, is_debug=False)
         self.db = FavoriteWorldDB()
+        self.fetcher = WebFetcher(self.config_path, is_debug=False)
         logger.info("Crawler init -> done")
 
     def run(self) -> None:
@@ -37,7 +37,7 @@ class Crawler:
         logger.info("DB control -> done.")
 
         logger.info("Manage cache file -> start.")
-        manage_cache_file(Fetcher.cache_path)
+        manage_cache_file(WebFetcher.cache_path)
         logger.info("Manage cache file -> done.")
         logger.info("Crawler run -> done")
 
