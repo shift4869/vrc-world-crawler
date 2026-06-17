@@ -26,10 +26,10 @@ def make_pls_json() -> None:
     for record in records:
         world = {"ID": record.world_id, "Name": record.world_name, "Description": record.description}
         if record.favorite_group == "手動登録":
-            categories["手動登録"].append(world)
+            categories["00000_手動登録"].append(world)
             continue
         if not record.tags:
-            categories["tag_nothing"].append(world)
+            categories["000_tag_nothing"].append(world)
             continue
         tags = record.tags.split("|")
 
@@ -37,6 +37,8 @@ def make_pls_json() -> None:
             tag = tag.strip()
             if not tag:
                 continue
+            if tag == "謎解き":
+                tag = "0000_" + tag
             if world["ID"] not in seen_ids[tag]:
                 categories[tag].append(world)
                 seen_ids[tag].add(world["ID"])
