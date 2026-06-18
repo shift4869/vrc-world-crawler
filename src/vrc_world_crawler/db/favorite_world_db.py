@@ -115,7 +115,7 @@ class FavoriteWorldDB(Base):
                     # p.registered_at = r.registered_at
                     result.append(1)
             else:
-                if r.favorite_id and r.favorite_id != "":
+                if r.favorite_id and r.favorite_id != "" and r.favorite_id != "手動登録":
                     try:
                         q = (
                             session

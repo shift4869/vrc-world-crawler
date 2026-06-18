@@ -50,7 +50,7 @@ def make_pls_json() -> None:
     for tag, worlds in categories.items():
         categories_result.append({"Category": tag, "Worlds": worlds})
     categories_result.sort(key=lambda x: x["Category"])
-    result = {"ReverseCategorys": True, "ShowPrivateWorld": True, "Categorys": categories_result}
+    result = {"ReverseCategorys": False, "ShowPrivateWorld": True, "Categorys": categories_result}
 
     Path(output_file).write_bytes(orjson.dumps(result, option=orjson.OPT_INDENT_2 | orjson.OPT_SORT_KEYS))
 
