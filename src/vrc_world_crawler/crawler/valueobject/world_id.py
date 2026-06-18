@@ -5,7 +5,12 @@ from typing import Self
 
 @dataclass(frozen=True)
 class WorldId:
-    WORLD_ID_PATTERN = "wrld_.*"
+    """
+    WorldId 型は WORLD_ID_PATTERN で表される文字列 もしくは "???" を受け取る
+    空白は許容されない
+    """
+
+    WORLD_ID_PATTERN = "^wrld_[0-9a-f-]*$"
     world_id: str
 
     def __post_init__(self) -> None:
@@ -41,3 +46,8 @@ class WorldId:
 if __name__ == "__main__":
     world_id = WorldId("wrld_fb2d8457-c02e-400b-aeb1-dde094f0f912")
     print(world_id)
+
+    try:
+        world_id = WorldId("wrld_wrld_fb2d8457-c02e-400b-aeb1-dde094f0f912")
+    except ValueError:
+        print("Error")

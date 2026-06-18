@@ -7,8 +7,14 @@ from vrc_world_crawler.crawler.valueobject.world_id import WorldId
 
 @dataclass(frozen=True)
 class WorldUrl:
-    WORLD_URL_PATTERN1 = r"https://vrchat.com/home/world/wrld_(.*?)/info"
-    WORLD_URL_PATTERN2 = r"https://vrchat.com/home/world/wrld_(.*)"
+    """
+    WorldUrl 型は WORLD_URL_PATTERN1 もしくは WORLD_URL_PATTERN2 で表されるURL文字列を受け取り
+    WORLD_URL_PATTERN2 の形で文字列を保持する
+    空白や"???"は許容されない
+    """
+
+    WORLD_URL_PATTERN1 = r"^https://vrchat.com/home/world/wrld_([0-9a-f-]*)/info$"
+    WORLD_URL_PATTERN2 = r"^https://vrchat.com/home/world/wrld_([0-9a-f-]*)$"
     BASE_DOMAIN = "https://vrchat.com/home/world/"
     world_url: str
 
@@ -29,6 +35,11 @@ class WorldUrl:
             object.__setattr__(self, "world_url", self.world_url.replace("/info", ""))  # '/info' を削除
 
     def to_id(self) -> WorldId:
+        """WORLD_URL_PATTERN2 パターンと照合し、ワールドID部分のみを抽出する
+
+        Returns:
+            WorldId: 抽出したワールドID
+        """
         m = re.match(WorldUrl.WORLD_URL_PATTERN2, self.world_url)
         return WorldId("wrld_" + m.group(1)) if m else WorldId("???")
 
@@ -61,7 +72,6 @@ class WorldUrl:
             else:
                 world_id = world_id_or_url
                 return WorldUrl(WorldUrl.BASE_DOMAIN + world_id)
-
         raise ValueError
 
 
@@ -76,3 +86,9 @@ if __name__ == "__main__":
     world_url = WorldUrl.create(url1)
     world_url = WorldUrl.create(world_id)
     world_url = WorldUrl.create(str(world_id))
+
+    try:
+        url = "https://vrchat.com/home/world/wrld_wrld_fb2d8457-c02e-400b-aeb1-dde094f0f912/info"
+        world_url = WorldUrl(url)
+    except ValueError:
+        print("Error")
